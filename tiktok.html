@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      background: linear-gradient(90deg, #f43f5e, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 25px;
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .input-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 25px;
+    }
+
+    .input-box label {
+      display: block;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .input-box input:focus {
+      border-color: #f43f5e;
+    }
+
+    .input-box button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #f43f5e, #ec4899);
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .input-box button:hover {
+      opacity: 0.9;
+    }
+
+    #player {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      max-height: 70vh;
+      background: #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #player iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .placeholder {
+      color: #64748b;
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 0.95rem;
+    }
+
+    .tips {
+      margin-top: 25px;
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .tips strong {
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../index.html" class="back">← Back to games</a>
+
+    <header>
+      <h1>TikTok</h1>
+      <p>Paste any TikTok video link below</p>
+    </header>
+
+    <div class="input-box">
+      <label>TikTok video URL</label>
+      <input type="text" id="tiktokUrl" placeholder="https://www.tiktok.com/@user/video/1234567890">
+      <button onclick="loadVideo()">Load Video</button>
+    </div>
+
+    <div id="player">
+      <div class="placeholder">
+        Paste a TikTok link above and click Load Video
+      </div>
+    </div>
+
+    <div class="tips">
+      <strong>How to get the link:</strong><br>
+      1. Open a TikTok video<br>
+      2. Tap Share → Copy link<br>
+      3. Paste it in the box above
+    </div>
+  </div>
+
+  <script>
+    function loadVideo() {
+      const input = document.getElementById('tiktokUrl').value.trim();
+      const player = document.getElementById('player');
+
+      if (!input) {
+        alert('Please paste a TikTok video link');
+        return;
+      }
+
+      // Extract the video ID from common TikTok URL formats
+      let videoId = null;
+
+      // Format: https://www.tiktok.com/@user/video/1234567890
+      const match1 = input.match(/\/video\/(\d+)/);
+      if (match1) {
+        videoId = match1[1];
+      }
+
+      // Format: https://vm.tiktok.com/xxxxx (short links won't work directly)
+      if (!videoId && input.includes('vm.tiktok.com')) {
+        player.innerHTML = `<div class="placeholder">Short links (vm.tiktok.com) don't work.<br>Open the video first, then copy the full link.</div>`;
+        return;
+      }
+
+      if (!videoId) {
+        player.innerHTML = `<div class="placeholder">Could not find a video ID.<br>Make sure the link looks like:<br>tiktok.com/@user/video/1234567890</div>`;
+        return;
+      }
+
+      // Official TikTok Embed Player
+      player.innerHTML = `
+        <iframe 
+          src="https://www.tiktok.com/player/v1/${videoId}?music_info=1&description=1"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      `;
+    }
+
+    // Allow pressing Enter to load
+    document.getElementById('tiktokUrl').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') loadVideo();
+    });
+  </script>
+</body>
+</html>
